@@ -16,12 +16,7 @@ The server issues a per-installation bearer token after eligibility checks. No g
 4. The plugin links automatically and downloads only the item IDs on the active Bingo board.
 5. Matching drops are submitted automatically. Unrelated drops stay on the user's computer.
 
-## Development
-
-This project follows RuneLite's external plugin layout and uses only dependencies already supplied by RuneLite. `build=standard` is used for Plugin Hub review.
-
-Open the project in IntelliJ IDEA, use Java 11 / Eclipse Temurin, refresh Gradle, and run the `run` Gradle task. The test launcher starts RuneLite in developer mode.
-
 ## Plugin Hub submission
 
 See `PLUGIN-HUB-SUBMISSION.md` for the exact submission checklist.
+
