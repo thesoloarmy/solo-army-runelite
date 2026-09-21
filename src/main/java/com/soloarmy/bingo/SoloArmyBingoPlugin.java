@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -45,6 +46,12 @@ public class SoloArmyBingoPlugin extends Plugin
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final String TOKEN_KEY = "deviceToken";
     private static final String INSTALL_KEY = "installId";
+    private static final Set<String> DT2_BOSSES = Set.of(
+        "Duke Sucellus",
+        "The Leviathan",
+        "The Whisperer",
+        "Vardorvis"
+    );
 
     @Inject private Client client;
     @Inject private ClientThread clientThread;
@@ -55,6 +62,7 @@ public class SoloArmyBingoPlugin extends Plugin
 
     private volatile Set<Integer> trackedItemIds = Collections.emptySet();
     private volatile boolean linking = false;
+    private volatile boolean connectedMessageShown = false;
 
     @Provides
     SoloArmyBingoConfig provideConfig(ConfigManager configManager)
@@ -77,6 +85,7 @@ public class SoloArmyBingoPlugin extends Plugin
     {
         trackedItemIds = Collections.emptySet();
         linking = false;
+        connectedMessageShown = false;
     }
 
     @Subscribe
@@ -125,6 +134,12 @@ public class SoloArmyBingoPlugin extends Plugin
             {
                 continue;
             }
+
+            if (itemId == ItemID.GOLD_RING && !DT2_BOSSES.contains(event.getName()))
+            {
+                continue;
+            }
+
             submitDrop(token, itemId, Math.max(1, stack.getQuantity()), event.getName(), String.valueOf(event.getType()));
         }
     }
@@ -250,7 +265,11 @@ public class SoloArmyBingoPlugin extends Plugin
                         ids.forEach(value -> next.add(value.getAsInt()));
                     }
                     trackedItemIds = Collections.unmodifiableSet(next);
-                    notifyGame("Solo Army Bingo: connected; tracking " + next.size() + " active Bingo item IDs.");
+                    if (!connectedMessageShown)
+                    {
+                        connectedMessageShown = true;
+                        notifyGame("Solo Army Bingo: connected; tracking " + next.size() + " active Bingo item IDs.");
+                    }
                 }
             }
         });
